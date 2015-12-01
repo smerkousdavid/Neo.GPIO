@@ -107,6 +107,7 @@ class Neo:
 			return self.gpioval[pin]
 		except ValueError:
 			print "ERROR: digitalRead, value inserted wasn't an int"
-			return 0
+			return -1
 		except:
 			print "ERROR: digitalRead, error running"
+			return -1
