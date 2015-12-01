@@ -19,4 +19,4 @@ for a in range(0, 10): #Do for ten times
 	sleep(1)# wait one second
 
 #Read pin
-print "Current pin("+pinThree+") state is: "+str(neo.digitalRead(pinThree)) # read current value of pinThree
+print "Current pin("+str(pinThree)+") state is: "+str(neo.digitalRead(pinThree)) # read current value of pinThree
