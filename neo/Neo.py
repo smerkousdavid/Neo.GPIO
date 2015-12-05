@@ -2,7 +2,8 @@ from os import system, devnull
 from sys import exit
 from time import sleep
 from threading import Thread
-class Neo:
+
+class Gpio:
 	def __init__(self):
 		self.gpios = ["178", "179", "104", "143", "142", "141", "140", "149", "105", "148", "146", "147", "100", "102", "102", "106", "106", "107", "180", "181", "172", "173", "182", "124",
 		"25", "22", "14", "15", "16", "17", "18", "19", "20", "21", "203", "202", "177", "176", "175", "174", "119", "124", "127", "116", "7", "6", "5", "4"]
@@ -109,3 +110,109 @@ class Neo:
 		except:
 			print "ERROR: digitalRead, error running"
 			return -1
+
+class Temp:
+	def __init__(self): # Start temp module on object call
+		self.temp = 0000
+		try:
+			system("rmmod lm75 > /dev/null 2>&1;modprobe lm75 > /dev/null 2>&1") # Reset the temp module/kernel i2c reset
+		finally:
+			sleep(0.0001) # wait for script update
+		try:
+			system("sh -c 'echo lm75 0x48 >/sys/class/i2c-dev/i2c-1/device/new_device' > /dev/null 2>&1") #easier to run command to black hole using system
+		finally:
+			sleep(0.001) # longer script wait
+
+	def getTemp(self, mode="f"): # Return with mode
+		with open("/sys/class/i2c-dev/i2c-1/device/1-0048/temp1_input", "r") as reader: # Read i2c millicel file
+			self.temp = (float(reader.read().replace(' ','').replace('\n', '')))*(0.001) # Turn into celcius
+		return ((self.temp)*1.8+32) if "f" in mode else (self.temp) # Either return into Far or Celc
+
+class Barometer:
+	def __init__(self): 
+		self.temp = 0000
+		self.Tempscale = 0000
+		self.pressure = 0000
+		self.Tempress = 000
+		try:
+			system("rmmod mpl3115 > /dev/null 2>&1;modprobe mpl3115> /dev/null 2>&1") # Reset the temp module/kernel i2c reset
+		finally:
+			sleep(0.0001) # wait for script update
+
+	def getTemp(self, mode="f"): # Return from Barometer
+		with open("/sys/class/i2c-dev/i2c-1/device/1-0060/iio:device0/in_temp_raw", "r") as treader:
+			self.temp = (float(treader.read().replace('\n', '')))
+		with open("/sys/class/i2c-dev/i2c-1/device/1-0060/iio:device0/in_temp_scale", "r") as tsreader:
+			self.Tempscale = (float(tsreader.read().replace('\n', '')))
+		self.temp = ((self.temp)*(self.Tempscale))
+		return ((self.temp)*1.8+32) if "f" in mode else (self.temp)
+
+	def getPressure(self): # Return raw data which is (kPA) a form of pressure measurments sea level is about 100 
+		with open("/sys/class/i2c-dev/i2c-1/device/1-0060/iio:device0/in_pressure_raw", "r") as preader:
+			self.pressure = (float(preader.read().replace('\n', '')))
+		with open("/sys/class/i2c-dev/i2c-1/device/1-0060/iio:device0/in_pressure_scale", "r") as psreader:
+			self.Tempress = (float(psreader.read().replace('\n', '')))
+		return float((self.pressure)*(self.Tempress))
+		
+class Accel:
+	def __init__(self): 
+		self.accel = [0,0,0]
+		self.raw = ""
+		try:
+			with open("/sys/class/misc/FreescaleAccelerometer/enable", "w") as enabler:
+				enabler.write("1")
+		except:
+			print "Error: No Accel detected"
+
+	def get(self): # Return accel data in array
+		with open("/sys/class/misc/FreescaleAccelerometer/data", "r") as reader:
+			self.raw= str(reader.read().replace('\n', ''))
+		for a in range(0, 3):
+			try:
+				self.accel[a] = (int(self.raw[0:self.raw.index(',')]) if ',' in self.raw else int(self.raw))
+				self.raw = self.raw[self.raw.index(',')+1:]
+			except:
+				break
+		return self.accel # return like this [x, y, z] in integer formats
+
+class Magno:
+	def __init__(self): 
+		self.magn = [0,0,0]
+		self.raw = ""
+		try:
+			with open("/sys/class/misc/FreescaleMagnetometer/enable", "w") as enabler:
+				enabler.write("1")
+		except:
+			print "Error: No Magnometer detected"
+
+	def get(self): # Return mango data in array
+		with open("/sys/class/misc/FreescaleMagnetometer/data", "r") as reader:
+			self.raw= str(reader.read().replace('\n', ''))
+		for a in range(0, 3):
+			try:
+				self.magn[a] = (int(self.raw[0:self.raw.index(',')]) if ',' in self.raw else int(self.raw))
+				self.raw = self.raw[self.raw.index(',')+1:]
+			except:
+				break
+		return self.magn # return like this [x, y, z] in integer formats
+
+class Gyro:
+	def __init__(self): 
+		self.gyro = [0,0,0]
+		self.raw = ""
+		try:
+			with open("/sys/class/misc/FreescaleGyroscope/enable", "w") as enabler:
+				enabler.write("1")
+		except:
+			print "Error: No Gyro detected"
+
+	def get(self): # Return gyro data in array
+		with open("/sys/class/misc/FreescaleGyroscope/data", "r") as reader:
+			self.raw= str(reader.read().replace('\n', ''))
+		for a in range(0, 3):
+			try:
+				self.gyro[a] = (int(self.raw[0:self.raw.index(',')]) if ',' in self.raw else int(self.raw))
+				self.raw = self.raw[self.raw.index(',')+1:]
+			except:
+				break
+		return self.gyro # return like this [x, y, z] in integer formats
