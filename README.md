@@ -7,7 +7,8 @@ To install this package just download the zip and extract the library anwhere yo
 
 ###Use
 -----------------
-To get started on the Neo use the examples that are provided in the zipped folder
+To get started on the Neo use the examples that are provided in the zipped folder. For the Gpio use 
+Every pcb port number, which are labeled on the on the board itself
 
 
 ###Other
