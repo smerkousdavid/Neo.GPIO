@@ -5,4 +5,9 @@ Neo
 
 GNU public license v2.0
 '''
-from Neo import Neo
+from Neo import Gpio
+from Neo import Temp
+from Neo import Barometer
+from Neo import Accel
+from Neo import Magno
+from Neo import Gyro
