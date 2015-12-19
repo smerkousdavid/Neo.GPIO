@@ -8,6 +8,16 @@ EXAMPLE: place the neo folder on your desktop and then create a new python file 
 
 ###Use
 -----------------
+####INFO: you must run python file as root not udooer or errors might occur like sensor not plugged int<br>
+Example on how to to run the files (You can replace the SnapinSensorsExample.py with whatever file you want to run):
+
+        echo udooer | sudo -S su -c 'python SnapinSensorsExample.py'
+
+or<br>
+
+        echo udooer | sudo -S su -c 'python GpioExample.py'
+
+
 To get started on the Neo use the examples that are provided in the zipped folder. For the Gpio use<br> 
 Every pcb port number, which are labeled on the on the board itself<br>
 
