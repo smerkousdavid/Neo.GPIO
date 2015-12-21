@@ -115,11 +115,9 @@ class Gpio:
 class Led:
 	def __init__(self):
 		self.led = 0
-
 	def on(self):
 		with open("/sys/class/leds/led0/brightness", "w") as w:
 			w.write("1")
-
 	def off(self):
 		with open("/sys/class/leds/led0/brightness", "w") as w:
 			w.write("0")
@@ -137,7 +135,7 @@ class Temp:
 		finally:
 			sleep(0.0001) # again script update		
 		try:
-			call(["echo", "lm75", "0x48", ">/sys/class/i2c-dev/i2c-1/device/new_device"], stdout=NULLS, stderr=STDOUT) #easier to run command to black hole using system
+			system("sh -c 'echo lm75 0x48 >/sys/class/i2c-dev/i2c-1/device/new_device' 2&>/dev/null") #easier to run command to black hole using system
 		finally:
 			sleep(0.001) # longer script wait
 
