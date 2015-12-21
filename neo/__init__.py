@@ -11,3 +11,4 @@ from Neo import Barometer
 from Neo import Accel
 from Neo import Magno
 from Neo import Gyro
+from Neo import Led
