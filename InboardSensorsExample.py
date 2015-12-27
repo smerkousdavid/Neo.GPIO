@@ -13,6 +13,10 @@ gyro = Gyro() # new objects p.s. this will auto initialize the device onboard
 accel = Accel()
 magno = Magno()
 
+accel.calibrate()
+gyro.calibrate() # Reset current values to 0
+magno.calibrate()
+
 while True: # Run forever
 	gyroVals = gyro.get() # Returns a full xyz list [x,y,z] realtime (integers/degrees)
 	print "Gyroscope X: "+str(gyroVals[0])+" Y: "+str(gyroVals[1])+" Z: "+str(gyroVals[2])# turn current values (ints) to strings
