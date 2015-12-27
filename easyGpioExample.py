@@ -8,7 +8,7 @@ pin.pinOUT() # Make pin output
 readpin.pinIN() # Make pin in
 
 while True:
-  pin.on() # Turn pin on
+	pin.on() # Turn pin on
 	sleep(1) # wait one second
 	pin.off() # Turn pin off
 	print "pin 3 state %d" % readpin.get() # Get current pin state
