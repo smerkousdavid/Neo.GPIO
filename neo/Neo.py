@@ -132,7 +132,7 @@ class easyGpio():
         self.gpio.digitalWrite(self.pin, 0)
 
     def get(self):
-        self.gpio.digitalRead(self.pin)
+         return self.gpio.digitalRead(self.pin)
 
 
 class Led:
