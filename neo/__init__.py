@@ -6,6 +6,7 @@ Neo
 GNU public license v2.0
 '''
 from Neo import Gpio
+from Neo import easyGpio
 from Neo import Temp
 from Neo import Barometer
 from Neo import Accel
