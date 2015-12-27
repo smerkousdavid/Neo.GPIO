@@ -1,4 +1,4 @@
-from neo import Gpio
+from neo import easyGpio
 from time import sleep
 
 pin = easyGpio(2) # Pin 2 with LED
