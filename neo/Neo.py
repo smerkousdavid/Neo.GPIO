@@ -4,6 +4,7 @@ from sys import exit
 from time import sleep
 from threading import Thread
 
+
 class Gpio:
 	def __init__(self):
 		self.gpios = ["178", "179", "104", "143", "142", "141", "140", "149", "105", "148", "146", "147", "100", "102", "102", "106", "106", "107", "180", "181", "172", "173", "182", "124",
@@ -111,6 +112,28 @@ class Gpio:
 		except:
 			print "ERROR: digitalRead, error running"
 			return -1
+
+
+class easyGpio():
+    def __init__(self, pin):
+        self.pin = int(pin)
+        self.gpio = Gpio()
+
+    def pinOUT(self):
+        self.gpio.pinMode(self.pin, 1)
+
+    def pinIN(self):
+        self.gpio.pinMode(self.pin, 0)
+
+    def on(self):
+        self.gpio.digitalWrite(self.pin, 1)
+
+    def off(self):
+        self.gpio.digitalWrite(self.pin, 0)
+
+    def get(self):
+        self.gpio.digitalRead(self.pin)
+
 
 class Led:
 	def __init__(self):
