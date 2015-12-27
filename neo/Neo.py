@@ -115,24 +115,24 @@ class Gpio:
 
 
 class easyGpio():
-    def __init__(self, pin):
-        self.pin = int(pin)
-        self.gpio = Gpio()
+	def __init__(self, pin):
+ 		self.pin = int(pin)
+		self.gpio = Gpio()
 
-    def pinOUT(self):
-        self.gpio.pinMode(self.pin, 1)
+	def pinOUT(self):
+		self.gpio.pinMode(self.pin, 1)
 
-    def pinIN(self):
-        self.gpio.pinMode(self.pin, 0)
+	def pinIN(self):
+		self.gpio.pinMode(self.pin, 0)
 
-    def on(self):
-        self.gpio.digitalWrite(self.pin, 1)
+	def on(self):
+		self.gpio.digitalWrite(self.pin, 1)
 
-    def off(self):
-        self.gpio.digitalWrite(self.pin, 0)
+	def off(self):
+		self.gpio.digitalWrite(self.pin, 0)
 
-    def get(self):
-         return self.gpio.digitalRead(self.pin)
+   	def get(self):
+		return self.gpio.digitalRead(self.pin)
 
 
 class Led:
@@ -212,13 +212,23 @@ class Barometer:
 		
 class Accel:
 	def __init__(self): 
-		self.accel = [0,0,0]
+		self.accel = [0, 0, 0]
+		self.calib = [0, 0, 0]
+		self.valSub = []
 		self.raw = ""
 		try:
 			with open("/sys/class/misc/FreescaleAccelerometer/enable", "w") as enabler:
 				enabler.write("1")
 		except:
 			print "Error: No Accel detected"
+
+	def calibrate(self):
+		self.valSub = self.get()
+		for num in range(0, len(self.accel)):
+			self.calib[num] = self.valSub[num]
+		sleep(0.5)
+		for num in range(0, len(self.accel)):
+			self.calib[num] = self.valSub[num]
 
 	def get(self): # Return accel data in array
 		try:
@@ -233,17 +243,29 @@ class Accel:
 		except:
 			print "Error using accelerometer!"
 		finally:
+			for num in range(0, len(self.accel)):
+				self.accel[num] -= self.calib[num]
 			return self.accel # return like this [x, y, z] in integer formats
 
 class Magno:
 	def __init__(self): 
 		self.magn = [0,0,0]
+		self.calib = [0, 0, 0]
+		self.valSub = []
 		self.raw = ""
 		try:
 			with open("/sys/class/misc/FreescaleMagnetometer/enable", "w") as enabler:
 				enabler.write("1")
 		except:
 			print "Error: No Magnometer detected"
+
+	def calibrate(self):
+		self.valSub = self.get()
+		for num in range(0, len(self.magn)):
+			self.calib[num] = self.valSub[num]
+		sleep(0.5)
+		for num in range(0, len(self.magn)):
+			self.calib[num] = self.valSub[num]
 
 	def get(self): # Return mango data in array
 		with open("/sys/class/misc/FreescaleMagnetometer/data", "r") as reader:
@@ -254,17 +276,29 @@ class Magno:
 				self.raw = self.raw[self.raw.index(',')+1:]
 			except:
 				break
+		for num in range(0, len(self.magn)):
+			self.magn[num] -= self.calib[num]
 		return self.magn # return like this [x, y, z] in integer formats
 
 class Gyro:
 	def __init__(self): 
 		self.gyro = [0,0,0]
+		self.calib = [0, 0, 0]
+		self.valSub = []
 		self.raw = ""
 		try:
 			with open("/sys/class/misc/FreescaleGyroscope/enable", "w") as enabler:
 				enabler.write("1")
 		except:
 			print "Error: No Gyro detected"
+
+	def calibrate(self):
+		self.valSub = self.get()
+		for num in range(0, len(self.gyro)):
+			self.calib[num] = self.valSub[num]
+		sleep(0.5)
+		for num in range(0, len(self.gyro)):
+			self.calib[num] = self.valSub[num]
 
 	def get(self): # Return gyro data in array
 		with open("/sys/class/misc/FreescaleGyroscope/data", "r") as reader:
@@ -275,4 +309,6 @@ class Gyro:
 				self.raw = self.raw[self.raw.index(',')+1:]
 			except:
 				break
+		for num in range(0, len(self.gyro)):
+			self.gyro[num] -= self.calib[num]
 		return self.gyro # return like this [x, y, z] in integer formats
