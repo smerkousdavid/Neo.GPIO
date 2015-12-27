@@ -50,6 +50,24 @@ Lets blink forever and read our second pin (Remember read pin must be pulled ful
       sleep(1)
       print "Pin 2 current state is: "+str(gpio.digitalRead(readpin))
 
+Here is a way so that most people who use object oriented way
+
+        from neo import Gpio
+        from time import sleep
+        
+        pin = easyGpio(2) # Pin 2 with LED
+        readpin = easyGpio(3) # Pin 3 with switch
+        
+        pin.pinOUT() # Make pin output 
+        readpin.pinIN() # Make pin in
+        
+        while True:
+        	pin.on() # Turn pin on
+        	sleep(1) # wait one second
+        	pin.off() # Turn pin off
+        	print "pin 3 state %d" % readpin.get() # Get current pin state
+        	sleep(1)
+
 Yaay if everything worked correctly and you wired the LED and input button correctly then you should be able to read and write values<br>
 Remember GPIO is not the only thing you can do with this library you can use all the sensors that are provided currently for the Neo<br>Such as<br>
 
