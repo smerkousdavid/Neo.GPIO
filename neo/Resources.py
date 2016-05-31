@@ -1,6 +1,6 @@
-from mmap import mmap
-from os import devnull
-from subprocess import call, STDOUT, Popen, PIPE
+import struct
+from mmap import mmap, PAGESIZE, MAP_SHARED, PROT_WRITE, PROT_READ
+from subprocess import Popen, PIPE
 
 
 class ResourceError(Exception):
@@ -9,10 +9,12 @@ class ResourceError(Exception):
 
 
 class MemoryMap:
-    def __init__(self, file_lock):
-        self.raw = open(file_lock, "r+b")
+    def __init__(self, file_lock, mode="w"):
+        self.raw = open(file_lock, "w")  # O_RDWR | O_SYNC)
+        print self.raw
         try:
-            self.mmap = mmap(self.raw.fileno(), 0)  # Open file in memory
+            self.mmap = mmap(self.raw.fileno(), PAGESIZE, MAP_SHARED, PROT_WRITE)  # Open file in memory
+
         except ValueError:
             raise ResourceError("Couldn't lock file into memory: %s" % file_lock)
 
@@ -65,3 +67,38 @@ class Command:
         if self.prints:
             print toret
         return [code, toret]
+
+
+start = 0x0209C000
+end = 0x0209FFFF
+size = end - start
+print size
+
+oe = 0x134
+usr1 = 1 << 24
+
+out = 0x194
+clear = 0x190
+
+from time import sleep
+
+with open("/dev/mem", "r+b") as f:
+    mem = mmap(f.fileno(), size, MAP_SHARED, PROT_WRITE | PROT_READ, offset=start)
+print mem
+exit(1)
+packed = mem[oe + oe + 4]
+
+reg_status = struct.unpack("<L", packed)[0]
+reg_status &= ~(usr1)
+mem[oe + oe + 4] = struct.unpack("<L", packed)[0]
+
+while True:
+    try:
+        mem[out + out + 4] = struct.unpack("<L", packed)[0]
+        sleep(1)
+        mem[clear + clear + 4] = struct.unpack("<L", packed)[0]
+        sleep(1)
+    except:
+        break
+
+mem.close()

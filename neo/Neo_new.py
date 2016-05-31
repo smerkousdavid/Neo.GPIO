@@ -1,30 +1,42 @@
-from neo.Maps import Maps
-from neo.Resources import MemoryMap, Command
+from os import geteuid
+
+from Maps import Maps
+from Resources import MemoryMap, Command
+
+if geteuid() != 0:
+    print "Please run script as root!"
+    exit(1)
 
 
 class Gpio:
     def __init__(self):
         self.maps = Maps()
-        self.export = MemoryMap("/sys/class/gpio/export")
-        self.io_maps = [None] * (len(self.maps.gpios) + 1)
+        self.export = open("/sys/class/gpio/export", "w")
+        self.io_maps = [[None, None]] * (len(self.maps.gpios) + 1)
 
-        for pin in range(0, self.maps.gpios):
+        for pin in range(0, len(self.maps.gpios)):
             try:
                 cur_path = self.maps.get_gpio_path(pin)
                 raw_pin = self.maps.gpios[pin]
-                self.export.resize(len(raw_pin))
-                self.export.write_digit(raw_pin)
-                self.io_maps[pin] = [MemoryMap(cur_path + "value"),
-                                     MemoryMap(cur_path + "direction")]
+                # self.export.resize(len(raw_pin))
+                self.export.write(raw_pin)
+                self.export.flush()
+                self.io_maps[pin] = [MemoryMap(cur_path + "value", "r+"),
+                                     MemoryMap(cur_path + "direction", "r+")]
             except (OSError, ValueError, IndexError, IOError, TypeError):
-                self.io_maps[pin][0].close()
-                self.io_maps[pin][1].close()
+                try:
+                    self.io_maps[pin][0].close()
+                    self.io_maps[pin][1].close()
+                except (TypeError, AttributeError):
+                    pass
+        print self.io_maps
         self.export.close()
 
     def pin_mode(self, pin, direction=0):
         try:
             self.io_maps[pin][1].write_line("in" if direction < 1 else "out")
-        except (ValueError, IndexError, TypeError):
+        except (ValueError, IndexError, TypeError), e:
+            print e
             raise ValueError("Current distribute %d" % pin)
 
     def digital_write(self, pin, value=0):
@@ -113,3 +125,13 @@ class Temp:
             print "Snap in sensor is not plugged in!"
         finally:
             return (self.temp * 1.8 + 32) if "f" in mode else self.temp  # Either return into Far or Celc
+
+
+from time import sleep
+
+led = Gpio()
+while True:
+    led.pin_mode(2, 1)
+    sleep(1)
+    led.pin_mode(2, 0)
+    sleep(1)
