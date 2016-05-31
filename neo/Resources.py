@@ -1,5 +1,4 @@
-import struct
-from mmap import mmap, PAGESIZE, MAP_SHARED, PROT_WRITE, PROT_READ
+# from mmap import mmap, PAGESIZE, MAP_SHARED, PROT_WRITE, PROT_READ
 from subprocess import Popen, PIPE
 
 
@@ -9,12 +8,12 @@ class ResourceError(Exception):
 
 
 class MemoryMap:
-    def __init__(self, file_lock, mode="w"):
-        self.raw = open(file_lock, "w")  # O_RDWR | O_SYNC)
-        print self.raw
+    def __init__(self, file_lock, mode="r+b"):
+        self.raw = open(file_lock, mode)  # O_RDWR | O_SYNC)
         try:
-            self.mmap = mmap(self.raw.fileno(), PAGESIZE, MAP_SHARED, PROT_WRITE)  # Open file in memory
-
+            self.mmap = self.raw
+            # @TODO work on actually getting this to work
+            # self.mmap = mmap(self.raw.fileno(), PAGESIZE, MAP_SHARED, PROT_WRITE)  # Open file in memory
         except ValueError:
             raise ResourceError("Couldn't lock file into memory: %s" % file_lock)
 
@@ -35,7 +34,9 @@ class MemoryMap:
         return self.raw.readline()
 
     def write_digit(self, digit):
-        self.mmap[0] = str(digit)
+        self.mmap.seek(0)
+        self.mmap.write(str(digit))
+        # self.mmap[0] = str(digit)
         self.mmap.flush()
 
     def write_line(self, line):
@@ -43,9 +44,11 @@ class MemoryMap:
         self.mmap.write(line)
         self.mmap.flush()
 
+    '''
     def resize(self, size):
         self.mmap.seek(0)
         self.mmap.resize(size)
+    '''
 
     def close(self):
         try:
@@ -69,6 +72,10 @@ class Command:
         return [code, toret]
 
 
+# @TODO WORK ON MEMORY MAPPING
+# @TODO CREATE STATIC METHOD CALLING FOR EASYGPIO (NO RESOURCE RELOADING)
+
+''' TEST GPIO 24 PXCLK (FAIL)
 start = 0x0209C000
 end = 0x0209FFFF
 size = end - start
@@ -102,3 +109,4 @@ while True:
         break
 
 mem.close()
+'''
