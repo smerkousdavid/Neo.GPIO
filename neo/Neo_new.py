@@ -160,7 +160,11 @@ class Servo:
 
     def attach(self):
         self.pwm_pin = 1
-        self.pwm_out.set_period(self.pwm_pin, )
+        self.set_period(self.servo_period)
+
+    def set_period(self, servo_period=20408163):
+        self.servo_period = servo_period
+        self.pwm_out.set_period(self.pwm_pin, self.servo_period)
 
     def write(self, angle=0):
         angle = self.angle_min if angle < self.angle_min \
