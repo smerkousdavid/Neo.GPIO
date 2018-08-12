@@ -1,14 +1,18 @@
 # Neo.GPIO
-####A python library to control the Gpios, Accel, Gyro, Temp, Baro, Magno sensors/pins easily
+#### A python library to control the Gpios, Accel, Gyro, Temp, Baro, Magno sensors/pins easily
 
-###Install
+## Help needed with new NEOC bindings
+-----------------
+I was working on the C version of this library so that it could be used in any language with easy simulated fakePWM support. However that library still requires a lot of work and Python bindings. I know the fakePWM support has been in the soon to come for a while, but I've been quite busy with life for the past few years. I am more than happy to review any pull requests on this project or NEOC (link: https://github.com/smerkousdavid/NEOC.GPIO) 
+
+### Install
 -----------------
 To install this package just download the zip and extract the library anwhere your python file will be
 EXAMPLE: place the neo folder on your desktop and then create a new python file on the desktop for your program
 
-###Use
+### Use
 -----------------
-####INFO: you must run python file as root not udooer or errors might occur like sensor not plugged int<br>
+#### INFO: you must run python file as root not udooer or errors might occur like sensor not plugged int<br>
 Example on how to to run the files (You can replace the SnapinSensorsExample.py with whatever file you want to run):
 
         echo udooer | sudo -S su -c 'python SnapinSensorsExample.py'
@@ -79,10 +83,10 @@ Remember GPIO is not the only thing you can do with this library you can use all
 
 Check them out in the SnapinSensorsExample.py and InBoardSensorsExample.py<br>
 
-####Soon to come PWM (analogWrite/Read) and faster IO and i2c speeds using direct ports and maybe MM files
+#### Soon to come PWM (analogWrite/Read) and faster IO and i2c speeds using direct ports and maybe MM files
 I just need to know if people are interested in that, message me if so<br>
 
-###Other
+### Other
 -----------------
 Don't worry about this library there is a lot of error checking that goes through before sending pin values<br>
 The only thing that this won't handle is detecting is the cortex pins are on output, so if you set the cortex pin on output<br>
